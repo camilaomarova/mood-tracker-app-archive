@@ -2,7 +2,7 @@ server:
   port: 8097
 spring:
   datasource:
-    url: jdbc:postgresql://167.172.158.67:5432/mood_tracker_db
+    url: jdbc:postgresql://localhost:5432/mood_tracker_db
     username: postgres
     password: 123456
     driver-class-name: org.postgresql.Driver
