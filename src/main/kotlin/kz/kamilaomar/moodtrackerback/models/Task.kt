@@ -13,6 +13,7 @@ data class Task(
     val id: Long? = null,
     val userId: Long? = null,
     val mood: String? = null,
+    val time: String? = null,
     val title: String? = null,
     val description: String? = null,
     val priority: String? = null
