@@ -2,7 +2,7 @@ package kz.kamilaomar.moodtrackerback.controller
 
 import kz.kamilaomar.moodtrackerback.models.Task
 import kz.kamilaomar.moodtrackerback.repository.TaskRepository
-import kz.kamilaomar.moodtrackerback.service.UserService
+import kz.kamilaomar.moodtrackerback.service.TaskService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class TaskController(
     private val taskRepository: TaskRepository,
-    private val userService: UserService
+    private val taskService: TaskService
 ) {
 
     @GetMapping("/tasks")
@@ -41,5 +41,11 @@ class TaskController(
             taskRepository.delete(task)
             ResponseEntity<Void>(HttpStatus.OK)
         }.orElse(ResponseEntity.notFound().build())
+    }
+
+    @GetMapping("/tasks/analyze/{userId}")
+    fun analyzeAllTasks(@PathVariable userId: Long): ResponseEntity<String> {
+        val analysis = taskService.analyzeUserTasks(userId)
+        return ResponseEntity.ok(analysis)
     }
 }
