@@ -1,6 +1,7 @@
 package kz.kamilaomar.moodtrackerback.controller
 
 import kz.kamilaomar.moodtrackerback.models.LoginRequest
+import kz.kamilaomar.moodtrackerback.models.LoginResponse
 import kz.kamilaomar.moodtrackerback.service.TokenProvider
 import kz.kamilaomar.moodtrackerback.service.UserService
 import org.springframework.http.ResponseEntity
@@ -17,14 +18,20 @@ class AuthController(
 ) {
 
     @PostMapping("/login")
-    fun login(@RequestBody loginRequest: LoginRequest): ResponseEntity<String> {
+    fun login(@RequestBody loginRequest: LoginRequest): ResponseEntity<LoginResponse> {
         val user = userService.findByUsername(loginRequest.username)
 
         return if (user != null && passwordEncoder.matches(loginRequest.password, user.password)) {
             val token = tokenProvider.createToken(user.username!!)
-            ResponseEntity.ok(token)
+
+            val loginResponse = LoginResponse(
+                token = token,
+                userId = user.id.toString()
+            )
+
+            ResponseEntity.ok(loginResponse)
         } else {
-            ResponseEntity.status(401).body("Invalid credentials")
+            ResponseEntity.status(401).body(LoginResponse(token = "Invalid credentials", userId = null))
         }
     }
 }

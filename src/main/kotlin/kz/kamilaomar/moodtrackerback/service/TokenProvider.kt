@@ -29,6 +29,7 @@ class TokenProvider(
             .setExpiration(validity)
             .signWith(Keys.hmacShaKeyFor(stringToByteArray(secretKey)), SignatureAlgorithm.HS256)
             .compact()
+//        return UUID.randomUUID().toString()
     }
 
     fun getUsernameFromToken(token: String): String {
@@ -48,7 +49,6 @@ class TokenProvider(
                 .parseClaimsJws(token)
             return true
         } catch (e: Exception) {
-            // Handle exception (e.g., log it) or return false
             return false
         }
     }

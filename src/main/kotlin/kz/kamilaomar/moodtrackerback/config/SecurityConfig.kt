@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import javax.servlet.http.HttpServletResponse
 
 @Configuration
 @EnableWebSecurity
@@ -31,16 +32,30 @@ class SecurityConfig(
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder())
     }
 
+//    override fun configure(http: HttpSecurity) {
+//        http
+//            .csrf().disable()
+//            .authorizeRequests()
+//            .antMatchers("/public/**").permitAll()
+//            .antMatchers("/login").permitAll()
+//            .antMatchers("/api/users/register").permitAll() // permit access to registration endpoint
+//            .anyRequest().permitAll()
+//            .and()
+//            .addFilterBefore(JwtTokenFilter(tokenProvider), UsernamePasswordAuthenticationFilter::class.java)
+//    }
     override fun configure(http: HttpSecurity) {
         http
             .csrf().disable()
             .authorizeRequests()
             .antMatchers("/public/**").permitAll()
             .antMatchers("/login").permitAll()
-            .antMatchers("/api/users/register").permitAll() // permit access to registration endpoint
-            .anyRequest().permitAll()
+            .antMatchers("/api/users/register").permitAll()
+            .anyRequest().authenticated() // Require authentication for all other requests
             .and()
             .addFilterBefore(JwtTokenFilter(tokenProvider), UsernamePasswordAuthenticationFilter::class.java)
+            .exceptionHandling().authenticationEntryPoint { request, response, authException ->
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")
+            }
     }
 
     @Bean

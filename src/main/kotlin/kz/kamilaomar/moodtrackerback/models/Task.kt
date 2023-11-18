@@ -11,7 +11,7 @@ import javax.persistence.GenerationType
 data class Task(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-    val userId: Long? = null,
+    var userId: Long? = null,
     val mood: String? = null,
     val time: String? = null,
     val title: String? = null,

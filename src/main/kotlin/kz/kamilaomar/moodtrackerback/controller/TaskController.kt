@@ -16,8 +16,9 @@ class TaskController(
     @GetMapping("/tasks")
     fun getAllTasks(): List<Task> = taskRepository.findAll()
 
-    @PostMapping("/tasks")
-    fun createTask(@RequestBody task: Task): ResponseEntity<String> {
+    @PostMapping("/tasks/{userId}")
+    fun createTask(@RequestBody task: Task, @PathVariable userId: Long): ResponseEntity<String> {
+        task.userId = userId
         taskRepository.save(task)
 
         return ResponseEntity.ok("Task successfully created")
