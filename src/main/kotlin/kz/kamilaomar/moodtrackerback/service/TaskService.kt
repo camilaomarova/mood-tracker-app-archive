@@ -20,7 +20,7 @@ class TaskService(private val taskRepository: TaskRepository) {
         val motivationalMessages = generateMotivationalMessages()
 
         return "Total minutes spent in a mood: $productiveTimes \n" +
-                "Pleasant Time Ranges for Tasks Completions: $positiveMoodTimeRanges \n" +
+                "Pleasant Time Ranges for Tasks Completions:\n $positiveMoodTimeRanges \n" +
                 "Recommended Tasks: $recommendedTasks \n" +
                 "Avoid Tasks: $avoidTasks \n" +
                 "Exercise Recommendations:\n $exerciseRecommendations \n" +
