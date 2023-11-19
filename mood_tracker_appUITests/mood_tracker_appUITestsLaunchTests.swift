@@ -1,13 +1,13 @@
 //
-//  testUITestsLaunchTests.swift
-//  testUITests
+//  mood_tracker_appUITestsLaunchTests.swift
+//  mood_tracker_appUITests
 //
 //  Created by Camila Omarova on 19.11.2023.
 //
 
 import XCTest
 
-final class testUITestsLaunchTests: XCTestCase {
+final class mood_tracker_appUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
@@ -17,7 +17,7 @@ final class testUITestsLaunchTests: XCTestCase {
         continueAfterFailure = false
     }
 
-    func testLaunch() throws {
+    func mood_tracker_appLaunch() throws {
         let app = XCUIApplication()
         app.launch()
 

@@ -1,13 +1,13 @@
 //
-//  testUITests.swift
-//  testUITests
+//  mood_tracker_appUITests.swift
+//  mood_tracker_appUITests
 //
 //  Created by Camila Omarova on 19.11.2023.
 //
 
 import XCTest
 
-final class testUITests: XCTestCase {
+final class mood_tracker_appUITests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -30,7 +30,7 @@ final class testUITests: XCTestCase {
         // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
 
-    func testLaunchPerformance() throws {
+    func mood_tracker_appLaunchPerformance() throws {
         if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
             // This measures how long it takes to launch your application.
             measure(metrics: [XCTApplicationLaunchMetric()]) {
