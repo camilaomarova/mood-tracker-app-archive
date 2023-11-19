@@ -18,6 +18,11 @@ class TaskController(
 
     @PostMapping("/tasks/{userId}")
     fun createTask(@RequestBody task: Task, @PathVariable userId: Long): ResponseEntity<String> {
+        // Validate startTime and finishTime
+        if ((task.finishTime?.compareTo(task.startTime!!) ?: 0) <= 0) {
+            return ResponseEntity.status(400).body("Finish time should be later than start time. Please pick another time.")
+        }
+
         task.userId = userId
         taskRepository.save(task)
 

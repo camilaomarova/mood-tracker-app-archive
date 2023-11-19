@@ -26,7 +26,7 @@ class JwtTokenFilter (
     }
 
     private fun extractToken(request: HttpServletRequest): String? {
-        // Extract the token from the Authorization header or elsewhere in the request
+        // Extract the token from the Authorization header
         // For example: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
         val authorizationHeader = request.getHeader("Authorization")
         return if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {

@@ -32,17 +32,6 @@ class SecurityConfig(
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder())
     }
 
-//    override fun configure(http: HttpSecurity) {
-//        http
-//            .csrf().disable()
-//            .authorizeRequests()
-//            .antMatchers("/public/**").permitAll()
-//            .antMatchers("/login").permitAll()
-//            .antMatchers("/api/users/register").permitAll() // permit access to registration endpoint
-//            .anyRequest().permitAll()
-//            .and()
-//            .addFilterBefore(JwtTokenFilter(tokenProvider), UsernamePasswordAuthenticationFilter::class.java)
-//    }
     override fun configure(http: HttpSecurity) {
         http
             .csrf().disable()

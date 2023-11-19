@@ -25,4 +25,3 @@ data class User(
     )
     val roles: Set<Role> = emptySet()
 )
-
