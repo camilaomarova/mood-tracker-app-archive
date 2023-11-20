@@ -128,7 +128,7 @@ struct TaskView: View {
                 }
                 .padding()
                 .frame(width: UIScreen.main.bounds.width - 40) // Adjust the width as needed
-                .background(RoundedRectangle(cornerRadius: 6).foregroundColor(pastelBlueColor))
+                .background(RoundedRectangle(cornerRadius: 6).foregroundColor(.blue))
                 .foregroundColor(.white)
                 .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5))
                 

@@ -1,80 +1,5 @@
-import Foundation
 import SwiftUI
-
-//struct LineGraph: View {
-//    let data: [String: [(String, String)]]?
-//    let title: String
-//    let moodNames: [String]
-//
-//    var body: some View {
-//        VStack {
-//            Text(title)
-//                .font(.headline)
-//                .padding()
-//
-//            if let data = data {
-//                LineChart(data: data, moodNames: moodNames)
-//                    .frame(height: 200)
-//            }
-//        }
-//        .padding()
-//    }
-//}
-
-struct LineChart: View {
-    let data: [String: [(String, String)]]
-    let moodNames: [String]
-
-    var body: some View {
-        ScrollView(.horizontal) {
-            HStack(alignment: .bottom, spacing: 10) {
-                ForEach(moodNames, id: \.self) { mood in
-                    if let timeRanges = data[mood] {
-                        LineGraphLine(data: timeRanges)
-                            .stroke(lineColor(for: mood), style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
-                    }
-                }
-            }
-        }
-    }
-
-    private func lineColor(for mood: String) -> Color {
-        // Assign different colors based on mood
-        switch mood {
-        case "Energetic": return .red
-        case "Relaxed": return .yellow
-        case "Creative": return .green
-        case "OtherMood": return .indigo // Add more cases as needed
-        default: return .gray
-        }
-    }
-}
-
-struct LineGraphLine: Shape {
-    let data: [(String, String)]
-
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-
-        for (index, timeRange) in data.enumerated() {
-            guard let value = Int(timeRange.1) else {
-                // Handle the case where the value is nil (e.g., show an error, skip the point, etc.)
-                continue
-            }
-
-            let x = rect.width / CGFloat(data.count - 1) * CGFloat(index)
-            let y = rect.height - CGFloat(value * 10) // Adjust the scaling factor as needed
-
-            if index == 0 {
-                path.move(to: CGPoint(x: x, y: y))
-            } else {
-                path.addLine(to: CGPoint(x: x, y: y))
-            }
-        }
-
-        return path
-    }
-}
+import Charts
 
 struct AnalyzeView: View {
     let userId: String
@@ -100,19 +25,9 @@ struct AnalyzeView: View {
     }
 
     @State private var shouldNavigateToTask = false
+    @State private var totalMinutesData: [String: Int] = [:]
+    @State private var timeRangesData: [String: [(String, String)]] = [:]
     @State private var analysisResult: String = ""
-    
-    private func parseData() -> ([String: Int], [String: [(String, String)]]) {
-        // Parse your response and extract the necessary data
-        // For example, you can use regular expressions to extract values from the response string
-        
-        // Replace this with your actual parsing logic
-        let totalMinutesData: [String: Int] = ["Energetic": 270, "Relaxed": 10, "Overwhelmed": 10, "Angry": 20, "Creative": 60, "Tired": 10, "Stressed": 10]
-        
-        let timeRangesData: [String: [(String, String)]] = ["Energetic": [("15:22", "15:22"), ("15:25", "15:25")], "Relaxed": [("16:10", "16:20")], "Creative": [("16:48", "17:48")]]
-        
-        return (totalMinutesData, timeRangesData)
-    }
 
     var body: some View {
         ScrollView {
@@ -141,19 +56,38 @@ struct AnalyzeView: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 Spacer()
+                Spacer()
+                Spacer()
+                Spacer()
+                Spacer()
+                Spacer()
+                Spacer()
+                Spacer()
+                Spacer()
+                Spacer()
+                Spacer()
+                Spacer()
+                Spacer()
+                Spacer()
                 
-                let dataPoints: [CGFloat] = [0, 1, 2, 3, 4]
-                let line1Data: [CGFloat] = [0, 1, 4, 9, 16]
-                let line2Data: [CGFloat] = [0, 2, 3, 1, 4]
+
+                SimpleLineChartView(totalMinutesData: totalMinutesData)
+                    .padding()
+                    .frame(maxWidth: .infinity, maxHeight: 250)
+                
+                Spacer()
+                Spacer()
+                Spacer()
+                Spacer()
+                Spacer()
+                Spacer()
+                Spacer()
 
                 // Draw bar graph for "Total minutes spent in a mood"
-                BarGraph(data: parseData().0, title: "Total Minutes Spent in a Mood", legend: "Mood")
-                
-                LineGraph(dataPoints: dataPoints, linesData: [line1Data, line2Data], lineColors: [.blue, .red])
-                    .frame(height: 200)
+                BarGraph(data: totalMinutesData, title: "Total Minutes Spent in a Mood", legend: "Mood")
 
                 // Draw bar graph for "Pleasant Time Ranges for Tasks Completions"
-//                LineGraph(data: parseData().1, title: "Pleasant Time Ranges for Tasks Completions", moodNames: Array(parseData().1.keys))
+                BarGraph(data: timeRangesData, title: "Pleasant Time Ranges for Tasks Completions", legend: "Mood Time Range")
             }
             .padding(.top, 20)
             .onAppear {
@@ -161,8 +95,9 @@ struct AnalyzeView: View {
             }
         }
     }
-    
+
     private func fetchData() {
+        // Data fetching logic
         guard let url = URL(string: "http://localhost:8097/tasks/analyze/\(userId)") else {
             print("Invalid URL")
             return
@@ -178,25 +113,107 @@ struct AnalyzeView: View {
                 // Handle the error appropriately (show an alert, update UI, etc.)
                 return
             }
-
+            
             guard let data = data else {
                 print("No data received")
                 // Handle the case where no data is received (show an alert, update UI, etc.)
                 return
             }
-
+            
             if let resultString = String(data: data, encoding: .utf8) {
-                // Update analysisResult with the received string
+                
+                // Example data for testing
+                let extractedString = """
+                {"totalMinutesData": {"Energetic": 270, "Relaxed": 10, "Overwhelmed": 10, "Angry": 20, "Creative": 60, "Tired": 10, "Stressed": 10},
+                 "timeRangesData": {"Energetic": [("15:22", "15:22"), ("15:25", "15:25")], "Relaxed": [("16:10", "16:20")], "Creative": [("16:48", "17:48")]}}
+            """
+                let (totalMinutesData, timeRangesData) = parseData(from: extractedString)
+                
                 DispatchQueue.main.async {
+                    self.totalMinutesData = totalMinutesData
+                    self.timeRangesData = timeRangesData
                     self.analysisResult = resultString
                 }
-            } else {
-                print("Error converting data to string")
-                // Handle the conversion error appropriately (show an alert, update UI, etc.)
             }
         }.resume()
     }
+    
+    
+
+    private func parseData(from response: String) -> ([String: Int], [String: [(String, String)]]) {
+        // Parse your response and extract the necessary data
+        // For example, you can use regular expressions to extract values from the response string
+
+        // Replace this with your actual parsing logic
+        // Example parsing logic
+        // ...
+
+        let totalMinutesData: [String: Int] = ["Energetic": 270, "Relaxed": 10, "Overwhelmed": 10, "Angry": 20, "Creative": 60, "Tired": 10, "Stressed": 10]
+
+        let timeRangesData: [String: [(String, String)]] = ["Energetic": [("15:22", "15:22"), ("15:25", "15:25")], "Relaxed": [("16:10", "16:20")], "Creative": [("16:48", "17:48")]]
+
+        return (totalMinutesData, timeRangesData)
+    }
 }
+
+struct SimpleLineChartView: View {
+    let totalMinutesData: [String: Int]
+
+    var body: some View {
+        VStack {
+            Chart {
+                ForEach(totalMinutesData.sorted(by: { $0.key < $1.key }), id: \.key) { (mood, value) in
+                    LineMark(x: .value(mood, mood), y: .value("Total Minutes", Double(value)))
+                        .foregroundStyle(Color.blue)
+                        .interpolationMethod(.catmullRom)
+                        .symbol(.circle)
+                }
+            }
+            .chartXScale(range: .plotDimension(padding: 20.0))
+            .chartXAxis {
+                AxisMarks(preset: .aligned, position: .top, values: .stride(by: .day)) { value in
+                    AxisValueLabel(format: .dateTime.day().weekday(.narrow))
+                }
+            }
+            .chartPlotStyle { plotArea in
+                plotArea.frame(maxWidth: .infinity, minHeight: 250.0, maxHeight: 250.0)
+            }
+            .chartYAxis {
+                AxisMarks(position: .leading)
+            }
+
+            // Legend as a list
+            VStack(alignment: .leading, spacing: 10) {
+                ForEach(totalMinutesData.sorted(by: { $0.key < $1.key }), id: \.key) { (mood, _) in
+                    LegendItem(color: Color.blue, label: mood)
+                }
+            }
+            .padding(.bottom, 10)
+        }
+    }
+}
+
+struct LegendItem: View {
+    let color: Color
+    let label: String
+
+    var body: some View {
+        HStack(spacing: 5) {
+            RoundedRectangle(cornerRadius: 5)
+                .fill(color)
+                .frame(width: 15, height: 15)
+            Text(label)
+                .font(.caption)
+                .lineLimit(1) // Set line limit to 1 to prevent truncation
+                .minimumScaleFactor(0.5) // Adjust the minimum scale factor as needed
+        }
+    }
+}
+
+// ... (existing code)
+
+
+// ... (existing code)
 
 struct ResponseModel: Decodable {
     let result: String
@@ -255,29 +272,70 @@ struct BarGraph: View {
     }
 }
 
-// test line graph
-struct LineGraph: View {
-    let dataPoints: [CGFloat]
-    let linesData: [[CGFloat]]
-    let lineColors: [Color]
+let diet: [Diet] = [
+    Diet(
+        date: Calendar.current.date(
+            from: .init(
+                year: 2023,
+                month: 1,
+                day: 1
+            )
+        ) ?? Date(),
+        value: 2000.0
+    ),
+    Diet(
+        date: Calendar.current.date(
+            from: .init(
+                year: 2023,
+                month: 1,
+                day: 2
+            )
+        ) ?? Date(),
+        value: 1800.0
+    ),
+    Diet(
+        date: Calendar.current.date(
+            from: .init(
+                year: 2023,
+                month: 1,
+                day: 3
+            )
+        ) ?? Date(),
+        value: 2300.0
+    ),
+    Diet(
+        date: Calendar.current.date(
+            from: .init(
+                year: 2023,
+                month: 1,
+                day: 4
+            )
+        ) ?? Date(),
+        value: 2100.0
+    ),
+    Diet(
+        date: Calendar.current.date(
+            from: .init(
+                year: 2023,
+                month: 1,
+                day: 5
+            )
+        ) ?? Date(),
+        value: 1500.0
+    ),
+]
 
-    var body: some View {
-        GeometryReader { geometry in
-            ForEach(0..<linesData.count) { index in
-                Path { path in
-                    for i in 0..<dataPoints.count {
-                        let x = CGFloat(i) / CGFloat(dataPoints.count - 1) * geometry.size.width
-                        let y = (1 - linesData[index][i] / 20) * geometry.size.height
-                        let point = CGPoint(x: x, y: y)
-                        if i == 0 {
-                            path.move(to: point)
-                        } else {
-                            path.addLine(to: point)
-                        }
-                    }
-                }
-                .stroke(lineColors[index], lineWidth: 2)
-            }
-        }
-    }
+struct Diet {
+    let dateLabel: String = "Day"
+    let date: Date
+    let valueLabel: String = "Diet"
+    let value: Double
 }
+
+struct Burned {
+    let dateLabel: String = "Day"
+    let date: Date
+    let valueLabel: String = "Burned"
+    let value: Double
+}
+
