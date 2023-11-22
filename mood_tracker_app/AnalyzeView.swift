@@ -334,23 +334,48 @@ struct ClockView: View {
                 .font(.headline)
                 .padding()
 
+            // ...
+
             ZStack {
                 // Rotate the entire clock by -90 degrees
                 ForEach(timeRangesData.sorted(by: { $0.key < $1.key }), id: \.key) { (mood, ranges) in
                     ForEach(ranges.indices, id: \.self) { index in
                         let range = ranges[index]
-                        PieSlice(startAngle: angle(for: range.0),
-                                 endAngle: angle(for: range.1),
-                                 clockwise: true)
-                            .foregroundColor(color(for: mood))
-                            .overlay(
-                                Text(String(mood.prefix(3)))
-                                    .font(.caption)
-                                    .foregroundColor(.white)
-                                    .rotationEffect(.degrees(-90))
-                                    .position(labelPosition(for: angle(for: range.0), in: 100))
-                            )
-                            .rotationEffect(.degrees(-90))
+                        if mood == "Relaxed" {
+                            if index == 0 {
+                                // Draw the pie slice for "Relaxed" in yellow for the specified time range
+                                PieSlice(startAngle: angle(for: range.0),
+                                         endAngle: angle(for: range.1),
+                                         clockwise: true)
+                                    .foregroundColor(.yellow)
+                            }
+                        } else if mood == "Creative" {
+                            // Draw the pie slice for "Creative" in green for all ranges
+                            PieSlice(startAngle: angle(for: range.0),
+                                     endAngle: angle(for: range.1),
+                                     clockwise: true)
+                                .foregroundColor(.green)
+                                .overlay(
+                                    Text(String(mood.prefix(3)))
+                                        .font(.caption)
+                                        .foregroundColor(.white)
+                                        .rotationEffect(.degrees(-90))
+                                        .position(labelPosition(for: angle(for: range.0), in: 100))
+                                )
+                        } else {
+                            // Draw other moods in their respective colors
+                            PieSlice(startAngle: angle(for: range.0),
+                                     endAngle: angle(for: range.1),
+                                     clockwise: true)
+                                .foregroundColor(color(for: mood))
+                                .overlay(
+                                    Text(String(mood.prefix(3)))
+                                        .font(.caption)
+                                        .foregroundColor(.white)
+                                        .rotationEffect(.degrees(-90))
+                                        .position(labelPosition(for: angle(for: range.0), in: 100))
+                                )
+                        }
                     }
                 }
 
@@ -364,6 +389,11 @@ struct ClockView: View {
             }
             .frame(width: 240, height: 240)
             .rotationEffect(.degrees(-90)) // Rotate the entire clock back to its original position
+
+
+
+            // ...
+
         }
         .padding()
     }
@@ -408,6 +438,7 @@ struct ClockView: View {
         return CGPoint(x: centerX + x, y: centerY + y)
     }
 }
+
 
 struct PieSlice: Shape {
     var startAngle: Double
