@@ -333,9 +333,7 @@ struct ClockView: View {
             Text("Pleasant Time Ranges on Clock")
                 .font(.headline)
                 .padding()
-
-            // ...
-
+            
             ZStack {
                 // Rotate the entire clock by -90 degrees
                 ForEach(timeRangesData.sorted(by: { $0.key < $1.key }), id: \.key) { (mood, ranges) in
@@ -389,11 +387,6 @@ struct ClockView: View {
             }
             .frame(width: 240, height: 240)
             .rotationEffect(.degrees(-90)) // Rotate the entire clock back to its original position
-
-
-
-            // ...
-
         }
         .padding()
     }
@@ -438,7 +431,6 @@ struct ClockView: View {
         return CGPoint(x: centerX + x, y: centerY + y)
     }
 }
-
 
 struct PieSlice: Shape {
     var startAngle: Double
