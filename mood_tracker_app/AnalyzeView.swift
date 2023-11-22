@@ -4,31 +4,22 @@ import Charts
 struct AnalyzeView: View {
     let userId: String
     let bearerToken: String
-
+    
     init(userId: String, bearerToken: String) {
         self.userId = userId
         self.bearerToken = bearerToken
     }
 
     let pastelBlueColor = Color(red: 0.6, green: 0.8, blue: 1.0)
-
-    struct PastelBlueButtonStyle: ButtonStyle {
-        let pastelBlueColor = Color(red: 0.6, green: 0.8, blue: 1.0)
-
-        func makeBody(configuration: Configuration) -> some View {
-            configuration.label
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(RoundedRectangle(cornerRadius: 10).foregroundColor(pastelBlueColor))
-                .foregroundColor(.white)
-        }
-    }
+    
+    private var timeRanges: [(String, String)] = []
+    private var mood: String = ""
 
     @State private var shouldNavigateToTask = false
     @State private var totalMinutesData: [String: Int] = [:]
     @State private var timeRangesData: [String: [(String, String)]] = [:]
     @State private var analysisResult: String = ""
-
+    
     var body: some View {
         ScrollView {
             VStack {
@@ -70,7 +61,7 @@ struct AnalyzeView: View {
                 Spacer()
                 Spacer()
                 
-
+                // Draw bar graph for "Total minutes spent in a mood"
                 SimpleLineChartView(totalMinutesData: totalMinutesData)
                     .padding()
                     .frame(maxWidth: .infinity, maxHeight: 250)
@@ -84,15 +75,73 @@ struct AnalyzeView: View {
                 Spacer()
 
                 // Draw bar graph for "Total minutes spent in a mood"
-                BarGraph(data: totalMinutesData, title: "Total Minutes Spent in a Mood", legend: "Mood")
+                BarGraph(data: totalMinutesData, legend: "Mood", title: "")
 
                 // Draw bar graph for "Pleasant Time Ranges for Tasks Completions"
-                BarGraph(data: timeRangesData, title: "Pleasant Time Ranges for Tasks Completions", legend: "Mood Time Range")
+                BarGraph(data: timeRangesData, legend: "Mood Time Range", title: "Pleasant Time Ranges for Tasks Completions")
+                
+                // Integrate the TimeRangesView here
+                ClockView(timeRangesData: timeRangesData)
+                    .padding()
+                    .frame(width: 240, height: 240)
+                
+                Spacer()
+                Spacer()
+                Spacer()
             }
             .padding(.top, 20)
             .onAppear {
                 fetchData()
             }
+        }
+    }
+    
+    private func angle(for time: String) -> Angle {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm"
+        guard let date = dateFormatter.date(from: time) else {
+            return Angle(degrees: 0)
+        }
+
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.hour, .minute], from: date)
+
+        guard let hour = components.hour, let minute = components.minute else {
+            return Angle(degrees: 0)
+        }
+
+        // Calculate the angle based on hour and minute components
+        let hourAngle = Angle(degrees: Double((hour % 12) * 30 + minute / 2))
+
+        return hourAngle
+    }
+
+    private func labelPosition(for angle: Double, in radius: CGFloat) -> CGPoint {
+        let smallerRadius = radius * 0.4 // Adjust the scale factor (0.4) as needed
+        let radians = angle * .pi / 180
+        let x = smallerRadius * cos(CGFloat(radians))
+        let y = smallerRadius * sin(CGFloat(radians))
+        let centerX = CGFloat(200) / 2 // Center of the circle
+        let centerY = CGFloat(200) / 2 // Center of the circle
+
+        // Apply the scale factor only to the x-coordinate of the numbers
+        let mirroredX = -x
+
+        return CGPoint(x: centerX + mirroredX, y: centerY + y)
+    }
+
+    private func color(for mood: String) -> Color {
+        // Assign a unique color for each mood or use a predefined color scheme
+        // Modify this method based on your color preferences
+        switch mood {
+        case "Energetic":
+            return .red
+        case "Relaxed":
+            return .green
+        case "Creative":
+            return .yellow
+        default:
+            return .gray
         }
     }
 
@@ -125,7 +174,7 @@ struct AnalyzeView: View {
                 // Example data for testing
                 let extractedString = """
                 {"totalMinutesData": {"Energetic": 270, "Relaxed": 10, "Overwhelmed": 10, "Angry": 20, "Creative": 60, "Tired": 10, "Stressed": 10},
-                 "timeRangesData": {"Energetic": [("15:22", "15:22"), ("15:25", "15:25")], "Relaxed": [("16:10", "16:20")], "Creative": [("16:48", "17:48")]}}
+                 "timeRangesData": {"Energetic": [("15:22", "16:22")], "Relaxed": [("16:10", "16:20")], "Creative": [("16:48", "17:48")]}}
             """
                 let (totalMinutesData, timeRangesData) = parseData(from: extractedString)
                 
@@ -138,16 +187,9 @@ struct AnalyzeView: View {
         }.resume()
     }
     
-    
-
     private func parseData(from response: String) -> ([String: Int], [String: [(String, String)]]) {
         // Parse your response and extract the necessary data
         // For example, you can use regular expressions to extract values from the response string
-
-        // Replace this with your actual parsing logic
-        // Example parsing logic
-        // ...
-
         let totalMinutesData: [String: Int] = ["Energetic": 270, "Relaxed": 10, "Overwhelmed": 10, "Angry": 20, "Creative": 60, "Tired": 10, "Stressed": 10]
 
         let timeRangesData: [String: [(String, String)]] = ["Energetic": [("15:22", "15:22"), ("15:25", "15:25")], "Relaxed": [("16:10", "16:20")], "Creative": [("16:48", "17:48")]]
@@ -161,6 +203,10 @@ struct SimpleLineChartView: View {
 
     var body: some View {
         VStack {
+            Text("Total Minutes Spent in a Mood")
+                .font(.headline)
+                .padding()
+
             Chart {
                 ForEach(totalMinutesData.sorted(by: { $0.key < $1.key }), id: \.key) { (mood, value) in
                     LineMark(x: .value(mood, mood), y: .value("Total Minutes", Double(value)))
@@ -210,11 +256,6 @@ struct LegendItem: View {
     }
 }
 
-// ... (existing code)
-
-
-// ... (existing code)
-
 struct ResponseModel: Decodable {
     let result: String
 }
@@ -231,8 +272,8 @@ struct PrimaryButtonStyle: ButtonStyle {
 
 struct BarGraph: View {
     let data: [String: Any]?
-    let title: String
     let legend: String
+    let title: String
 
     var body: some View {
         VStack {
@@ -272,70 +313,116 @@ struct BarGraph: View {
     }
 }
 
-let diet: [Diet] = [
-    Diet(
-        date: Calendar.current.date(
-            from: .init(
-                year: 2023,
-                month: 1,
-                day: 1
-            )
-        ) ?? Date(),
-        value: 2000.0
-    ),
-    Diet(
-        date: Calendar.current.date(
-            from: .init(
-                year: 2023,
-                month: 1,
-                day: 2
-            )
-        ) ?? Date(),
-        value: 1800.0
-    ),
-    Diet(
-        date: Calendar.current.date(
-            from: .init(
-                year: 2023,
-                month: 1,
-                day: 3
-            )
-        ) ?? Date(),
-        value: 2300.0
-    ),
-    Diet(
-        date: Calendar.current.date(
-            from: .init(
-                year: 2023,
-                month: 1,
-                day: 4
-            )
-        ) ?? Date(),
-        value: 2100.0
-    ),
-    Diet(
-        date: Calendar.current.date(
-            from: .init(
-                year: 2023,
-                month: 1,
-                day: 5
-            )
-        ) ?? Date(),
-        value: 1500.0
-    ),
-]
+struct PastelBlueButtonStyle: ButtonStyle {
+    let pastelBlueColor = Color(red: 0.6, green: 0.8, blue: 1.0)
 
-struct Diet {
-    let dateLabel: String = "Day"
-    let date: Date
-    let valueLabel: String = "Diet"
-    let value: Double
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(RoundedRectangle(cornerRadius: 10).foregroundColor(pastelBlueColor))
+            .foregroundColor(.white)
+    }
 }
 
-struct Burned {
-    let dateLabel: String = "Day"
-    let date: Date
-    let valueLabel: String = "Burned"
-    let value: Double
+struct ClockView: View {
+    let timeRangesData: [String: [(String, String)]]
+
+    var body: some View {
+        VStack {
+            Text("Pleasant Time Ranges on Clock")
+                .font(.headline)
+                .padding()
+
+            ZStack {
+                // Rotate the entire clock by -90 degrees
+                ForEach(timeRangesData.sorted(by: { $0.key < $1.key }), id: \.key) { (mood, ranges) in
+                    ForEach(ranges.indices, id: \.self) { index in
+                        let range = ranges[index]
+                        PieSlice(startAngle: angle(for: range.0),
+                                 endAngle: angle(for: range.1),
+                                 clockwise: true)
+                            .foregroundColor(color(for: mood))
+                            .overlay(
+                                Text(String(mood.prefix(3)))
+                                    .font(.caption)
+                                    .foregroundColor(.white)
+                                    .rotationEffect(.degrees(-90))
+                                    .position(labelPosition(for: angle(for: range.0), in: 100))
+                            )
+                            .rotationEffect(.degrees(-90))
+                    }
+                }
+
+                // Numbers should be visually rotated but not their places
+                ForEach(1..<13) { hour in
+                    Text("\(hour)")
+                        .font(.system(size: 18).weight(.bold)) // Adjust the font size as needed
+                        .rotationEffect(.degrees(90)) // Rotate the number text visually
+                        .position(labelPosition(for: Double(hour) * 30, in: 90)) // Adjust the radius as needed
+                }
+            }
+            .frame(width: 240, height: 240)
+            .rotationEffect(.degrees(-90)) // Rotate the entire clock back to its original position
+        }
+        .padding()
+    }
+
+    private func angle(for time: String) -> Double {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm"
+        guard let date = dateFormatter.date(from: time) else {
+            return 0
+        }
+
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.hour, .minute], from: date)
+
+        guard let hour = components.hour, let minute = components.minute else {
+            return 0
+        }
+
+        return Double((hour % 12) * 30 + minute / 2)
+    }
+
+    private func color(for mood: String) -> Color {
+        switch mood {
+        case "Energetic":
+            return .red
+        case "Relaxed":
+            return .green
+        case "Creative":
+            return .yellow
+        default:
+            return .gray
+        }
+    }
+
+    private func labelPosition(for angle: Double, in radius: CGFloat) -> CGPoint {
+        let radians = angle * .pi / 180
+        let x = radius * cos(CGFloat(radians))
+        let y = radius * sin(CGFloat(radians))
+        let centerX = CGFloat(120) // Center of the clock
+        let centerY = CGFloat(120) // Center of the clock
+
+        return CGPoint(x: centerX + x, y: centerY + y)
+    }
 }
 
+struct PieSlice: Shape {
+    var startAngle: Double
+    var endAngle: Double
+    var clockwise: Bool
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let center = CGPoint(x: rect.midX, y: rect.midY)
+        let radius = min(rect.width, rect.height) / 2
+
+        path.move(to: center)
+        path.addArc(center: center, radius: radius, startAngle: .degrees(startAngle), endAngle: .degrees(endAngle), clockwise: clockwise)
+        path.closeSubpath()
+
+        return path
+    }
+}
