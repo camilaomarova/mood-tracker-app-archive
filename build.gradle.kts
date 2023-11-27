@@ -48,7 +48,7 @@ dependencies {
 	compileOnly("org.projectlombok:lombok")
 
 	// Flyway
-	implementation("org.flywaydb:flyway-core")
+	implementation("org.flywaydb:flyway-core:7.10.0")
 
 	// JWT
 	implementation("io.jsonwebtoken:jjwt-api:0.11.2")

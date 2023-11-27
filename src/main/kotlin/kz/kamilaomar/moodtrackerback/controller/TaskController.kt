@@ -13,8 +13,8 @@ class TaskController(
     private val taskService: TaskService
 ) {
 
-    @GetMapping("/tasks")
-    fun getAllTasks(): List<Task> = taskRepository.findAll()
+    @GetMapping("/tasks/{userId}")
+    fun getAllTasks(@PathVariable userId: Long): List<Task> = taskRepository.findByUserId(userId)
 
     @PostMapping("/tasks/{userId}")
     fun createTask(@RequestBody task: Task, @PathVariable userId: Long): ResponseEntity<String> {
