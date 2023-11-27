@@ -40,7 +40,7 @@ struct AnalyzeView: View {
 
                 Text(analysisResult)
                     .font(.custom("Courier", size: 16))
-                    .foregroundColor(.blue)
+                    .foregroundColor(.black)
                     .padding()
                     .lineLimit(nil)
                     .multilineTextAlignment(.center)

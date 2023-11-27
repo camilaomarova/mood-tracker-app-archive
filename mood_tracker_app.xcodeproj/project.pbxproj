@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F5843CD12B153C1C00D863F5 /* TaskListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5843CD02B153C1C00D863F5 /* TaskListView.swift */; };
 		F5F7D2172B09763F00CD6AB7 /* mood_tracker_app.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F7D2162B09763F00CD6AB7 /* mood_tracker_app.swift */; };
 		F5F7D2192B09763F00CD6AB7 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F7D2182B09763F00CD6AB7 /* ContentView.swift */; };
 		F5F7D21B2B09764300CD6AB7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F5F7D21A2B09764300CD6AB7 /* Assets.xcassets */; };
@@ -39,6 +40,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F5843CD02B153C1C00D863F5 /* TaskListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListView.swift; sourceTree = "<group>"; };
 		F5F7D2132B09763F00CD6AB7 /* mood_tracker_app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mood_tracker_app.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5F7D2162B09763F00CD6AB7 /* mood_tracker_app.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mood_tracker_app.swift; sourceTree = "<group>"; };
 		F5F7D2182B09763F00CD6AB7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -112,6 +114,7 @@
 				F5F7D2422B0976BA00CD6AB7 /* LoginView.swift */,
 				F5F7D2442B09771B00CD6AB7 /* TaskView.swift */,
 				F5F7D2462B0A3D8100CD6AB7 /* AnalyzeView.swift */,
+				F5843CD02B153C1C00D863F5 /* TaskListView.swift */,
 			);
 			path = mood_tracker_app;
 			sourceTree = "<group>";
@@ -277,6 +280,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F5843CD12B153C1C00D863F5 /* TaskListView.swift in Sources */,
 				F5F7D2412B09768800CD6AB7 /* RegisterView.swift in Sources */,
 				F5F7D2472B0A3D8200CD6AB7 /* AnalyzeView.swift in Sources */,
 				F5F7D2192B09763F00CD6AB7 /* ContentView.swift in Sources */,

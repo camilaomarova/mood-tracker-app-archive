@@ -138,17 +138,30 @@ struct TaskView: View {
                         shouldNavigateToAnalyze = true
                     }
                     .padding()
-                    .frame(maxWidth: .infinity)  // Set the frame width to infinity
+                    .frame(width: UIScreen.main.bounds.width / 4)  // Set the frame width to one-fourth of the screen width
                     .background(RoundedRectangle(cornerRadius: 7).foregroundColor(.blue))
                     .foregroundColor(.white)
                     .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5))
+                    
+                    let pastelBlue = Color(red: 0.6, green: 0.8, blue: 1.0)
+
+                    // Button for navigating to TaskList
+                    NavigationLink(destination: TaskListView(bearerToken: bearerToken, userId: userId)) {
+                        Text("TaskList")
+                            .padding()
+                            .frame(width: UIScreen.main.bounds.width / 4)
+                            .background(RoundedRectangle(cornerRadius: 7).foregroundColor(pastelBlue))
+                            .foregroundColor(.white)
+                            .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5))
+                    }
+
 
                     // Button for analyzing
                     Button("Analyze") {
                         shouldNavigateToAnalyze = true
                     }
                     .padding()
-                    .frame(maxWidth: .infinity)  // Set the frame width to infinity
+                    .frame(width: UIScreen.main.bounds.width / 2.5)  // Set the frame width to one-fourth of the screen width
                     .buttonStyle(PastelBlueButtonStyle())
                     .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5))
                     .background(NavigationLink("", destination: AnalyzeView(userId: userId, bearerToken: bearerToken), isActive: $shouldNavigateToAnalyze).hidden())

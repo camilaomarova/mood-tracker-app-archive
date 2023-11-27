@@ -23,12 +23,15 @@ struct RegisterView: View {
     var body: some View {
         NavigationView {
             VStack {
-                Image(systemName: "person.circle.fill") // Icon (you can replace "person.circle.fill" with your desired SF Symbol)
+                Text("Register")
+                    .font(.title2)
+                
+                Image(systemName: "person.badge.plus")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 50, height: 50) // Adjust the size as needed
-                    .foregroundColor(.blue) // Set the icon color to blue
-                    .padding(.top, 20) // Add top padding to center the icon
+                    .frame(width: 50, height: 50)
+                    .foregroundColor(.blue)
+                    .padding(.top, 20)
 
                 TextField("Email", text: $email)
                     .padding()
