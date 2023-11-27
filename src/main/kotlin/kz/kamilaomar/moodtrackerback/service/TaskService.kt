@@ -19,8 +19,16 @@ class TaskService(private val taskRepository: TaskRepository) {
         val exerciseRecommendations = recommendExercises(userTasks)
         val motivationalMessages = generateMotivationalMessages()
 
+        val pleasantTimeRanges = positiveMoodTimeRanges.map { (mood, timeRanges) ->
+            val formattedTimeRanges = timeRanges.map { range ->
+                val (startTime, endTime) = range.split(" - ")
+                "($startTime, $endTime)"
+            }
+            "\"$mood\": [$formattedTimeRanges]"
+        }.joinToString(", ")
+
         return "Total minutes spent in a mood: $productiveTimes \n" +
-                "Pleasant Time Ranges for Tasks Completions:\n $positiveMoodTimeRanges \n" +
+                "Pleasant Time Ranges for Tasks Completions:\n {$pleasantTimeRanges} \n" +
                 "Recommended Tasks: $recommendedTasks \n" +
                 "Avoid Tasks: $avoidTasks \n" +
                 "Exercise Recommendations:\n $exerciseRecommendations \n" +
